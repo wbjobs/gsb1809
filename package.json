@@ -1,0 +1,18 @@
+{
+  "name": "async-rule-validator",
+  "version": "1.0.0",
+  "description": "可配置规则、依赖驱动、异步非阻塞的表单校验引擎（Web Worker + IndexedDB）",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test tests/expression.test.js tests/schema.test.js tests/storage.test.js tests/worker.test.js tests/engine.test.js",
+    "bench": "node tests/bench.test.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./worker": "./src/worker.js"
+  },
+  "keywords": ["validation", "rule-engine", "web-worker", "indexeddb", "async", "dependencies"],
+  "license": "MIT"
+}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>可配置异步校验引擎 · Web Worker + IndexedDB</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>可配置异步校验引擎</h1>
+    <div class="badges">
+      <span id="storageBadge" class="badge badge-muted">存储：检测中…</span>
+      <span id="workerBadge" class="badge badge-muted">Worker：检测中…</span>
+      <span id="perfBadge" class="badge">规则/秒：–</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左：表单（依赖 / 异步 / 错误聚合） -->
+    <section class="panel">
+      <h2>注册表单 <small>规则引擎 · 依赖 · 异步远程校验</small></h2>
+      <form id="regForm" novalidate>
+        <div class="field" data-field="username">
+          <label>用户名 <em>必填 · 3–20 位字母数字 · 异步查重（debounce 400ms）</em></label>
+          <input name="username" autocomplete="off" placeholder="试试 admin（已占用）" />
+          <div class="msg" data-msg="username"></div>
+        </div>
+
+        <div class="field" data-field="email">
+          <label>邮箱 <em>必填 · email · 异步 MX 模拟</em></label>
+          <input name="email" autocomplete="off" placeholder="name@example.com" />
+          <div class="msg" data-msg="email"></div>
+        </div>
+
+        <div class="field" data-field="age">
+          <label>年龄 <em>必填 · 18–120</em></label>
+          <input name="age" type="number" />
+          <div class="msg" data-msg="age"></div>
+        </div>
+
+        <div class="field" data-field="minorReason">
+          <label>未成年原因 <em>仅当 age &lt; 18 时必填（条件依赖）</em></label>
+          <input name="minorReason" placeholder="成年人无需填写" />
+          <div class="msg" data-msg="minorReason"></div>
+        </div>
+
+        <div class="field" data-field="pwd">
+          <label>密码 <em>必填 · ≥8 位 · 须含字母和数字 · 强度条</em></label>
+          <input name="pwd" type="password" />
+          <div class="strength"><i id="strengthBar"></i></div>
+          <div class="msg" data-msg="pwd"></div>
+        </div>
+
+        <div class="field" data-field="pwd2">
+          <label>确认密码 <em>必须与密码一致（跨字段依赖）</em></label>
+          <input name="pwd2" type="password" />
+          <div class="msg" data-msg="pwd2"></div>
+        </div>
+
+        <div class="field" data-field="inviteCode">
+          <label>邀请码 <em>role == "vip" 时必填（条件依赖）</em></label>
+          <input name="inviteCode" placeholder="VIP 用户必填" />
+          <div class="msg" data-msg="inviteCode"></div>
+        </div>
+
+        <div class="field" data-field="role">
+          <label>角色</label>
+          <select name="role">
+            <option value="user">普通用户</option>
+            <option value="vip">VIP 用户</option>
+            <option value="admin">管理员</option>
+          </select>
+          <div class="msg" data-msg="role"></div>
+        </div>
+
+        <div class="field field-inline">
+          <label class="checkbox"><input type="checkbox" name="agree" /> 我已阅读并同意条款（表单级表达式规则）</label>
+          <div class="msg" data-msg="agree"></div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">提交（全量校验）</button>
+          <button type="button" class="btn" id="resetBtn">重置</button>
+          <span id="formStatus" class="form-status"></span>
+        </div>
+
+        <div id="formErrors" class="form-errors"></div>
+      </form>
+    </section>
+
+    <!-- 右：引擎状态 / 性能 / 事件 -->
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>性能压测 <small>Worker 不阻塞主线程</small></h2>
+        <div class="row">
+          <label>字段数 <input type="number" id="fieldCount" value="500" min="50" max="5000" step="50" /></label>
+          <button class="btn btn-primary" id="benchBtn">开始压测</button>
+        </div>
+        <div class="jank">
+          主线程心跳（校验期间应流畅走动）：<b id="heartCount">0</b>
+          <div class="heart-track"><i id="heartBar"></i></div>
+        </div>
+        <pre id="benchOut" class="codeout">等待压测…</pre>
+      </section>
+
+      <section class="panel">
+        <h2>运行指标</h2>
+        <pre id="metricsOut" class="codeout">–</pre>
+      </section>
+
+      <section class="panel">
+        <h2>事件流 <small>start / cache:hit / rule:error …</small></h2>
+        <div id="eventLog" class="eventlog"></div>
+      </section>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
