@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>异步规则校验引擎</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Web Worker + IndexedDB</p>
+        <h1>可配置异步规则校验</h1>
+        <p>支持声明式规则、跨字段依赖、异步远程校验、循环检测、错误聚合与结果缓存。</p>
+      </div>
+      <div class="status-card">
+        <span id="engineMode" class="status-pill">初始化</span>
+        <strong id="latencyLabel">-- ms</strong>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>表单</h2>
+          <span id="validationSummary" class="summary">等待校验</span>
+        </div>
+
+        <form id="demoForm">
+          <label>用户名
+            <input name="username" value="alice" autocomplete="off" />
+            <small>试试 admin / root，会触发模拟远程占用。</small>
+          </label>
+
+          <label>账户类型
+            <select name="accountType">
+              <option value="personal">personal</option>
+              <option value="business">business</option>
+            </select>
+          </label>
+
+          <div class="grid-two">
+            <label>年龄
+              <input name="age" value="28" inputmode="numeric" />
+            </label>
+            <label>国家
+              <select name="country">
+                <option value="CN">CN</option>
+                <option value="US">US</option>
+              </select>
+            </label>
+          </div>
+
+          <label>邮编
+            <input name="postalCode" value="100000" inputmode="numeric" />
+            <small>CN 必须为 6 位数字；US 必须为 ZIP 格式。</small>
+          </label>
+
+          <div class="grid-two">
+            <label>密码
+              <input name="password" value="Secret123" />
+            </label>
+            <label>确认密码
+              <input name="confirmPassword" value="Secret123" />
+            </label>
+          </div>
+
+          <div class="grid-two">
+            <label>优惠券（可选）
+              <input name="coupon" />
+            </label>
+            <label>订单金额
+              <input name="orderTotal" value="199" inputmode="decimal" />
+            </label>
+          </div>
+
+          <label>税号
+            <input name="taxId" placeholder="business 账户必填" />
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" name="terms" checked />
+            同意服务条款
+          </label>
+        </form>
+
+        <div class="actions">
+          <button id="validateButton" type="button">立即校验</button>
+          <button id="exceptionButton" type="button" class="secondary">模拟远程异常</button>
+          <button id="timeoutButton" type="button" class="secondary">模拟超时</button>
+        </div>
+
+        <section class="result-block">
+          <h3>错误聚合</h3>
+          <ul id="errorList" class="issue-list"></ul>
+        </section>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-heading">
+          <h2>规则配置</h2>
+          <span id="storageMode" class="summary">IndexedDB</span>
+        </div>
+        <textarea id="rulesEditor" spellcheck="false"></textarea>
+        <div class="actions vertical">
+          <button id="saveRulesButton" type="button">保存规则到 IndexedDB</button>
+          <button id="resetRulesButton" type="button" class="secondary">恢复默认规则</button>
+          <button id="benchmarkButton" type="button" class="secondary">运行 1000 条规则性能测试</button>
+        </div>
+        <pre id="benchmarkOutput" class="benchmark"></pre>
+      </aside>
+    </main>
+
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

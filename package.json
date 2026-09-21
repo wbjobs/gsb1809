@@ -1,0 +1,14 @@
+{
+  "name": "async-rule-validation",
+  "version": "1.0.0",
+  "description": "Configurable dependency-aware async validation with Web Worker and IndexedDB",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/server.mjs",
+    "test": "node --test"
+  }
+}
